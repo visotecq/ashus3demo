@@ -3,6 +3,9 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form,Container,Row,Col,Card} from 'react-bootstrap';
 import AWS from 'aws-sdk';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
+
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 function App() {
@@ -41,6 +44,21 @@ const myBucketList = new AWS.S3({
   }, []);
 
 
+  const handleDownload = (image_name) => {
+    const myBucketImageDown = new AWS.S3({
+      params: { Bucket: S3_BUCKET, Key:image_name},
+      region: REGION,
+     
+    })
+    myBucketImageDown.getObject((err, data) => {
+      if (err) {
+        console.log(err, err.stack);
+      } else {
+        console.log(data.Body.toString())
+      }
+    });
+  }
+
 
   
 console.log(listFiles)
@@ -51,7 +69,10 @@ const pics = listFiles.map((item)=>
     <Card.Img variant="top" src={s3_url+item.Key} height={'200rem'}/>
     <Card.Body>
       <Card.Title>Pic Courtesy 
-      
+      <span style={{ float:'right' }}>
+       <a href='javascript:void(0)' onClick={() => handleDownload(item.Key)}><FontAwesomeIcon icon={faDownload} /></a> 
+       </span>
+
       </Card.Title>
       <Card.Text>
         Photographer Name
