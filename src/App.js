@@ -6,7 +6,6 @@ import AWS from 'aws-sdk';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
-
 window.Buffer = window.Buffer || require("buffer").Buffer;
 function App() {
  
@@ -28,6 +27,7 @@ const myBucketList = new AWS.S3({
   params: { Bucket: S3_BUCKET, Delimiter:'/'},
   region: REGION,
 })
+
 
 
   const [listFiles, setListFiles] = useState([]);
@@ -104,11 +104,46 @@ const pics = listFiles.map((item)=>
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleUpload = (e) => {
-      setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target);
+     // console.log(e.target.files)
+      const fileList = e.target.files
+   //   const files = []
+      const filePath = (fileList[0].webkitRelativePath)
+      var dirName = filePath.split('/')
+      dirName = dirName[0]+'/'
+      
+      console.log(dirName)
+
+      const myBucketCreateFolder = new AWS.S3({
+        params: { Bucket: S3_BUCKET, Key:dirName,Body:'body does not matter'},
+        region: REGION,
+      })
+
+      myBucketCreateFolder.putObject().promise();
+
+
+      for (var i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i)
+     //   files.push(file)
+          const params = {
+            Body: file,
+            Bucket: S3_BUCKET,
+            Key: dirName+file.name
+        };
+
+        myBucket.putObject(params)
+            .on('httpUploadProgress', (evt) => {
+                setProgress(Math.round((evt.loaded / evt.total) * 100))
+            })
+            .send((err) => {
+                if (err) console.log(err)
+            })
+      }
   }
 
   const handleSubmit = (e) => {
       e.preventDefault();
+
       const params = {
           Body: selectedFile,
           Bucket: S3_BUCKET,
@@ -118,13 +153,23 @@ const pics = listFiles.map((item)=>
       myBucket.putObject(params)
           .on('httpUploadProgress', (evt) => {
               setProgress(Math.round((evt.loaded / evt.total) * 100))
+              update_listing()
           })
           .send((err) => {
               if (err) console.log(err)
           })
   }
 
-
+function update_listing(){
+    myBucketList.listObjects((err, data) => {
+      if (err) {
+        console.log(err, err.stack);
+      } else {
+        setListFiles(data.Contents);
+        //  console.log(data.Contents);
+      }
+    });
+}
 
 
 
@@ -135,14 +180,21 @@ const pics = listFiles.map((item)=>
     <Container style={{ marginTop:'40px' }} >
       <Row>
         <Col sm={true}>
+        <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Label>Default file input example {progress}%</Form.Label>
+              <Form.Control type="file" onChange={handleUpload}  required/>
+            </Form.Group>
+              <Form.Control type='submit' value='Add File' name="add_files"/>
+        </Form>
         </Col>
         <Col sm={true}>
         <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formFile" className="mb-3">
               <Form.Label>Default file input example {progress}%</Form.Label>
-              <Form.Control type="file" onChange={handleUpload} />
+              <Form.Control type="file" onChange={handleUpload} directory="" webkitdirectory="" required/>
             </Form.Group>
-              <Form.Control type='submit' name='Submit'/>
+              <Form.Control type='submit' value='Add Folder' name="add_folder"/>
         </Form>
         </Col>
         <Col sm={true}>
