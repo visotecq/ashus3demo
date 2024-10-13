@@ -3,7 +3,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
 import S3 from 'react-aws-s3';
-
+window.Buffer = window.Buffer || require("buffer").Buffer;
 function App() {
  
 const config = {
@@ -26,10 +26,10 @@ function handleUpload(e) {
 
 function handleSubmit(e){
     e.preventDefault();
-    console.log(file)
-
+    console.log(file.name)
+    const name = file.name
     ReactS3Client
-    .uploadFile(file, file.name)
+    .uploadFile(file, name)
     .then(data => console.log(data))
     .catch(err => console.error(err))
 }
