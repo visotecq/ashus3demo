@@ -13,7 +13,7 @@ function App() {
 
   const S3_BUCKET ='uploadimagesfromuser';
   const REGION ='us-east-1';
-  
+  const s3_url = 'https://uploadimagesfromuser.s3.amazonaws.com/';
 
   AWS.config.update({
     accessKeyId: 'AKIAU67XKWU4M6HRWSCL',
@@ -45,32 +45,49 @@ const myBucketList = new AWS.S3({
 
 
   const handleDownload = (image_name) => {
-    const myBucketImageDown = new AWS.S3({
-      params: { Bucket: S3_BUCKET, Key:image_name},
-      region: REGION,
-     
+    // const myBucketImageDown = new AWS.S3({
+    //   params: { Bucket: S3_BUCKET, Key:image_name},
+    //   region: REGION
+    // })
+    // myBucketImageDown.getObject((err, data) => {
+    //   if (err) {
+    //     console.log(err, err.stack);
+    //   } else {
+    //     console.log(data.Body.toString())
+    //   }
+    // });
+    var url = s3_url+image_name;
+    fetch(url,{mode:'cors',cache:'no-cache'})
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = image_name || "downloaded-file";
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     })
-    myBucketImageDown.getObject((err, data) => {
-      if (err) {
-        console.log(err, err.stack);
-      } else {
-        console.log(data.Body.toString())
-      }
+    .catch((error) => {
+      console.error("Error fetching the file:", error);
     });
   }
 
 
   
 console.log(listFiles)
-const s3_url = 'https://uploadimagesfromuser.s3.amazonaws.com/';
+
 const pics = listFiles.map((item)=>
 <Col sm={true}>
     <Card style={{ width: '18rem' }}>
-    <Card.Img variant="top" src={s3_url+item.Key} height={'200rem'}/>
+    <Card.Img variant="top" src={s3_url+item.Key} height={'200rem'} />
     <Card.Body>
       <Card.Title>Pic Courtesy 
       <span style={{ float:'right' }}>
-       <a href='javascript:void(0)' onClick={() => handleDownload(item.Key)}><FontAwesomeIcon icon={faDownload} /></a> 
+       <a href='javascript:void(0)' onClick={() => handleDownload(item.Key)} ><FontAwesomeIcon icon={faDownload} /></a> 
        </span>
 
       </Card.Title>
