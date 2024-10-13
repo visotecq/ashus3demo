@@ -1,12 +1,14 @@
 import React,{useState} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Form from 'react-bootstrap/Form';
-import AWS from 'aws-sdk'
+import {Form,Container,Row,Col} from 'react-bootstrap';
+import AWS from 'aws-sdk';
 
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 function App() {
+ 
+
   const S3_BUCKET ='uploadimagesfromuser';
   const REGION ='us-east-1';
   
@@ -20,6 +22,8 @@ const myBucket = new AWS.S3({
   params: { Bucket: S3_BUCKET},
   region: REGION,
 })
+
+
 
 
 
@@ -55,13 +59,24 @@ const myBucket = new AWS.S3({
 
   return (
     <>
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="formFile" className="mb-3">
-        <Form.Label>Default file input example {progress}%</Form.Label>
-        <Form.Control type="file" onChange={handleUpload} />
-      </Form.Group>
-        <Form.Control type='submit' name='Submit'/>
-      </Form>
+    <Container style={{ marginTop:'40px' }} >
+      <Row>
+        <Col sm={true}>
+        </Col>
+        <Col sm={true}>
+        <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Label>Default file input example {progress}%</Form.Label>
+              <Form.Control type="file" onChange={handleUpload} />
+            </Form.Group>
+              <Form.Control type='submit' name='Submit'/>
+        </Form>
+        </Col>
+        <Col sm={true}>
+        </Col>
+      </Row>
+    </Container>
+   
     </>
   );
 }
