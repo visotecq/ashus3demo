@@ -5,6 +5,7 @@ import {Form,Container,Row,Col,Card} from 'react-bootstrap';
 import AWS from 'aws-sdk';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import SponsorFilter from './components/SponsorFIlter';
 
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
@@ -149,7 +150,7 @@ const pics = listFiles.map((item)=>
         </Col>
       </Row>
     </Container>
-
+    <SponsorFilter />
     <Container style={{ marginTop:'80px' }}>
       <Row>
         {pics}
