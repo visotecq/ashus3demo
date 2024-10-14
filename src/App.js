@@ -113,7 +113,8 @@ if(dir_size === 20 || dir_size === 0){
       <Card.Title><span> <FontAwesomeIcon icon={faFolder} size='2xl' />
               <a href='#' onClick={()=>OpenFolder(item.Key)}>{item.Key}</a></span>
       <span style={{ float:'right' }}>
-       <a href='#' onClick={() => handleDownload(item.Key)} ><FontAwesomeIcon icon={faDownload} /></a> 
+    {//   <a href='#' onClick={() => handleDownload(item.Key)} ><FontAwesomeIcon icon={faDownload} /></a> 
+    }
        </span>
 
       </Card.Title>
@@ -147,7 +148,7 @@ function OpenFolder(folder_name){
   });
   const pics_dir = listFolderFiles.map((item,index)=>{   
     const dir_size = item.Size
-    if(dir_size !== 20 || dir_size !== 0){
+    if(dir_size > 20){
       return(
       <Col sm={true} style={{ marginTop:'5px' }} key={index}>
         <Card style={{ width: '18rem' }}>
